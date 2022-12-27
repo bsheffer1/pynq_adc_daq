@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
-<EDKSYSTEM EDWVERSION="1.2" TIMESTAMP="Fri Nov  4 21:42:40 2022" VIVADOVERSION="2021.1">
+<EDKSYSTEM EDWVERSION="1.2" TIMESTAMP="Sun Dec 25 16:52:20 2022" VIVADOVERSION="2021.1">
 
   <SYSTEMINFO ARCH="zynq" BOARD="tul.com.tw:pynq-z2:part0:1.0" DEVICE="7z020" NAME="adc_interface" PACKAGE="clg400" SPEEDGRADE="-1"/>
 
@@ -284,14 +284,24 @@
             <CONNECTION INSTANCE="axi_smc" PORT="M00_AXI_wvalid"/>
           </CONNECTIONS>
         </PORT>
-        <PORT DIR="I" LEFT="31" NAME="data_status_reg" RIGHT="0" SIGIS="undef" SIGNAME="daq_0_data_status_reg">
+        <PORT DIR="I" LEFT="31" NAME="daq_status_reg" RIGHT="0" SIGIS="undef" SIGNAME="daq_0_daq_status_reg">
           <CONNECTIONS>
-            <CONNECTION INSTANCE="daq_0" PORT="data_status_reg"/>
+            <CONNECTION INSTANCE="daq_0" PORT="daq_status_reg"/>
           </CONNECTIONS>
         </PORT>
-        <PORT DIR="I" LEFT="31" NAME="data_adc_in" RIGHT="0" SIGIS="undef" SIGNAME="daq_0_data_adc_out">
+        <PORT DIR="I" LEFT="31" NAME="daq_adc_in" RIGHT="0" SIGIS="undef" SIGNAME="daq_0_daq_adc_out">
           <CONNECTIONS>
-            <CONNECTION INSTANCE="daq_0" PORT="data_adc_out"/>
+            <CONNECTION INSTANCE="daq_0" PORT="daq_adc_out"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" LEFT="31" NAME="daq_control_reg" RIGHT="0" SIGIS="undef" SIGNAME="axi_registers_daq_control_reg">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="daq_0" PORT="daq_control_reg"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" LEFT="31" NAME="daq_fifo_data_reg" RIGHT="0" SIGIS="undef" SIGNAME="daq_0_fifo_data_reg">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="daq_0" PORT="fifo_data_reg"/>
           </CONNECTIONS>
         </PORT>
         <PORT DIR="I" NAME="adc_valid" SIGIS="undef" SIGNAME="daq_0_valid_out">
@@ -304,9 +314,9 @@
             <CONNECTION INSTANCE="daq_0" PORT="ready_out"/>
           </CONNECTIONS>
         </PORT>
-        <PORT DIR="I" NAME="busy_in" SIGIS="undef" SIGNAME="xadc_wiz_0_eoc_out">
+        <PORT DIR="I" NAME="busy_in" SIGIS="undef" SIGNAME="xadc_wiz_0_busy_out">
           <CONNECTIONS>
-            <CONNECTION INSTANCE="xadc_wiz_0" PORT="eoc_out"/>
+            <CONNECTION INSTANCE="xadc_wiz_0" PORT="busy_out"/>
           </CONNECTIONS>
         </PORT>
         <PORT DIR="O" LEFT="3" NAME="led" RIGHT="0" SIGIS="undef" SIGNAME="axi_registers_led">
@@ -1130,6 +1140,9 @@
     <MODULE COREREVISION="1" FULLNAME="/daq_0" HWVERSION="1.0" INSTANCE="daq_0" IPTYPE="PERIPHERAL" IS_ENABLE="1" MODCLASS="PERIPHERAL" MODTYPE="daq" VLNV="xilinx.com:module_ref:daq:1.0">
       <DOCUMENTS/>
       <PARAMETERS>
+        <PARAMETER NAME="fifo_read_idle_state" VALUE="0"/>
+        <PARAMETER NAME="fifo_read_load_state" VALUE="1"/>
+        <PARAMETER NAME="fifo_read_wait_state" VALUE="2"/>
         <PARAMETER NAME="Component_Name" VALUE="adc_interface_daq_0_0"/>
         <PARAMETER NAME="EDK_IPTYPE" VALUE="PERIPHERAL"/>
       </PARAMETERS>
@@ -1144,8 +1157,6 @@
             <CONNECTION INSTANCE="rst_ps7_0_100M" PORT="peripheral_aresetn"/>
           </CONNECTIONS>
         </PORT>
-        <PORT CLKFREQUENCY="100000000" DIR="O" NAME="s_axis_aclk" SIGIS="clk"/>
-        <PORT DIR="O" NAME="m_axis_resetn" POLARITY="ACTIVE_LOW" SIGIS="rst"/>
         <PORT DIR="I" NAME="s_axis_tvalid" SIGIS="undef" SIGNAME="xadc_wiz_0_m_axis_tvalid">
           <CONNECTIONS>
             <CONNECTION INSTANCE="xadc_wiz_0" PORT="m_axis_tvalid"/>
@@ -1166,14 +1177,19 @@
             <CONNECTION INSTANCE="xadc_wiz_0" PORT="m_axis_tid"/>
           </CONNECTIONS>
         </PORT>
-        <PORT DIR="O" LEFT="31" NAME="data_status_reg" RIGHT="0" SIGIS="undef" SIGNAME="daq_0_data_status_reg">
+        <PORT DIR="O" LEFT="31" NAME="daq_status_reg" RIGHT="0" SIGIS="undef" SIGNAME="daq_0_daq_status_reg">
           <CONNECTIONS>
-            <CONNECTION INSTANCE="axi_registers" PORT="data_status_reg"/>
+            <CONNECTION INSTANCE="axi_registers" PORT="daq_status_reg"/>
           </CONNECTIONS>
         </PORT>
-        <PORT DIR="O" LEFT="31" NAME="data_adc_out" RIGHT="0" SIGIS="undef" SIGNAME="daq_0_data_adc_out">
+        <PORT DIR="O" LEFT="31" NAME="daq_adc_out" RIGHT="0" SIGIS="undef" SIGNAME="daq_0_daq_adc_out">
           <CONNECTIONS>
-            <CONNECTION INSTANCE="axi_registers" PORT="data_adc_in"/>
+            <CONNECTION INSTANCE="axi_registers" PORT="daq_adc_in"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" LEFT="31" NAME="daq_control_reg" RIGHT="0" SIGIS="undef" SIGNAME="axi_registers_daq_control_reg">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="axi_registers" PORT="daq_control_reg"/>
           </CONNECTIONS>
         </PORT>
         <PORT DIR="O" NAME="ready_out" SIGIS="undef" SIGNAME="daq_0_ready_out">
@@ -1184,6 +1200,11 @@
         <PORT DIR="O" NAME="valid_out" SIGIS="undef" SIGNAME="daq_0_valid_out">
           <CONNECTIONS>
             <CONNECTION INSTANCE="axi_registers" PORT="adc_valid"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" LEFT="31" NAME="fifo_data_reg" RIGHT="0" SIGIS="undef" SIGNAME="daq_0_fifo_data_reg">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="axi_registers" PORT="daq_fifo_data_reg"/>
           </CONNECTIONS>
         </PORT>
       </PORTS>
@@ -1199,7 +1220,7 @@
           <PARAMETER NAME="HAS_TLAST" VALUE="0"/>
           <PARAMETER NAME="FREQ_HZ" VALUE="100000000"/>
           <PARAMETER NAME="PHASE" VALUE="0.0"/>
-          <PARAMETER NAME="CLK_DOMAIN" VALUE="adc_interface_daq_0_0_s_axis_aclk"/>
+          <PARAMETER NAME="CLK_DOMAIN"/>
           <PARAMETER NAME="LAYERED_METADATA" VALUE="undef"/>
           <PARAMETER NAME="INSERT_VIP" VALUE="0"/>
           <PORTMAPS>
@@ -2356,9 +2377,9 @@
             <CONNECTION INSTANCE="processing_system7_0" PORT="M_AXI_GP0_ACLK"/>
             <CONNECTION INSTANCE="axi_smc" PORT="aclk"/>
             <CONNECTION INSTANCE="rst_ps7_0_100M" PORT="slowest_sync_clk"/>
-            <CONNECTION INSTANCE="axi_registers" PORT="s0_axi_aclk"/>
             <CONNECTION INSTANCE="xadc_wiz_0" PORT="m_axis_aclk"/>
             <CONNECTION INSTANCE="xadc_wiz_0" PORT="s_axis_aclk"/>
+            <CONNECTION INSTANCE="axi_registers" PORT="s0_axi_aclk"/>
             <CONNECTION INSTANCE="daq_0" PORT="clk_in"/>
           </CONNECTIONS>
         </PORT>
@@ -2646,8 +2667,8 @@
         <PORT DIR="O" LEFT="0" NAME="peripheral_aresetn" POLARITY="ACTIVE_LOW" RIGHT="0" SIGIS="rst" SIGNAME="rst_ps7_0_100M_peripheral_aresetn">
           <CONNECTIONS>
             <CONNECTION INSTANCE="axi_smc" PORT="aresetn"/>
-            <CONNECTION INSTANCE="axi_registers" PORT="s0_axi_aresetn"/>
             <CONNECTION INSTANCE="xadc_wiz_0" PORT="m_axis_resetn"/>
+            <CONNECTION INSTANCE="axi_registers" PORT="s0_axi_aresetn"/>
             <CONNECTION INSTANCE="daq_0" PORT="rst_in"/>
           </CONNECTIONS>
         </PORT>
@@ -2947,14 +2968,14 @@
         </PORT>
         <PORT DIR="O" NAME="user_temp_alarm_out" SIGIS="undef"/>
         <PORT DIR="O" LEFT="4" NAME="channel_out" RIGHT="0" SIGIS="undef"/>
-        <PORT DIR="O" NAME="eoc_out" SIGIS="undef" SIGNAME="xadc_wiz_0_eoc_out">
+        <PORT DIR="O" NAME="eoc_out" SIGIS="undef"/>
+        <PORT DIR="O" NAME="alarm_out" SIGIS="undef"/>
+        <PORT DIR="O" NAME="eos_out" SIGIS="undef"/>
+        <PORT DIR="O" NAME="busy_out" SIGIS="undef" SIGNAME="xadc_wiz_0_busy_out">
           <CONNECTIONS>
             <CONNECTION INSTANCE="axi_registers" PORT="busy_in"/>
           </CONNECTIONS>
         </PORT>
-        <PORT DIR="O" NAME="alarm_out" SIGIS="undef"/>
-        <PORT DIR="O" NAME="eos_out" SIGIS="undef"/>
-        <PORT DIR="O" NAME="busy_out" SIGIS="undef"/>
       </PORTS>
       <BUSINTERFACES>
         <BUSINTERFACE BUSNAME="__NOC__" NAME="M_AXIS" TYPE="INITIATOR" VLNV="xilinx.com:interface:axis:1.0">

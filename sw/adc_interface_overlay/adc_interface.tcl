@@ -1107,26 +1107,30 @@ Flash#Quad SPI Flash#GPIO#Quad SPI Flash#ENET Reset#GPIO#GPIO#GPIO#GPIO#UART\
   set_property -dict [ list \
    CONFIG.ADC_OFFSET_AND_GAIN_CALIBRATION {false} \
    CONFIG.BIPOLAR_OPERATION {true} \
+   CONFIG.BIPOLAR_VP_VN {true} \
+   CONFIG.CHANNEL_ENABLE_VP_VN {true} \
    CONFIG.ENABLE_AXI4STREAM {true} \
    CONFIG.ENABLE_CALIBRATION_AVERAGING {false} \
    CONFIG.ENABLE_RESET {false} \
    CONFIG.ENABLE_VCCDDRO_ALARM {false} \
    CONFIG.ENABLE_VCCPAUX_ALARM {false} \
    CONFIG.ENABLE_VCCPINT_ALARM {false} \
-   CONFIG.INTERFACE_SELECTION {Enable_AXI} \
+   CONFIG.EXTERNAL_MUX_CHANNEL {VP_VN} \
+   CONFIG.INTERFACE_SELECTION {None} \
    CONFIG.OT_ALARM {false} \
    CONFIG.SENSOR_OFFSET_AND_GAIN_CALIBRATION {false} \
+   CONFIG.SEQUENCER_MODE {Continuous} \
    CONFIG.SINGLE_CHANNEL_ACQUISITION_TIME {false} \
    CONFIG.SINGLE_CHANNEL_ENABLE_CALIBRATION {true} \
    CONFIG.SINGLE_CHANNEL_SELECTION {VP_VN} \
-   CONFIG.USER_TEMP_ALARM {false} \
+   CONFIG.USER_TEMP_ALARM {true} \
    CONFIG.VCCAUX_ALARM {false} \
    CONFIG.VCCINT_ALARM {false} \
+   CONFIG.XADC_STARUP_SELECTION {channel_sequencer} \
  ] $xadc_wiz_0
 
   # Create interface connections
   connect_bd_intf_net -intf_net axi_smc_M00_AXI [get_bd_intf_pins axi_registers/s0_axi] [get_bd_intf_pins axi_smc/M00_AXI]
-  connect_bd_intf_net -intf_net axi_smc_M01_AXI [get_bd_intf_pins axi_smc/M01_AXI] [get_bd_intf_pins xadc_wiz_0/s_axi_lite]
   connect_bd_intf_net -intf_net processing_system7_0_DDR [get_bd_intf_ports DDR] [get_bd_intf_pins processing_system7_0/DDR]
   connect_bd_intf_net -intf_net processing_system7_0_FIXED_IO [get_bd_intf_ports FIXED_IO] [get_bd_intf_pins processing_system7_0/FIXED_IO]
   connect_bd_intf_net -intf_net processing_system7_0_M_AXI_GP0 [get_bd_intf_pins axi_smc/S00_AXI] [get_bd_intf_pins processing_system7_0/M_AXI_GP0]
@@ -1135,15 +1139,16 @@ Flash#Quad SPI Flash#GPIO#Quad SPI Flash#ENET Reset#GPIO#GPIO#GPIO#GPIO#UART\
   connect_bd_net -net XADC_V_N_1 [get_bd_ports XADC_V_N] [get_bd_pins xadc_wiz_0/vn_in]
   connect_bd_net -net XADC_V_P_1 [get_bd_ports XADC_V_P] [get_bd_pins xadc_wiz_0/vp_in]
   connect_bd_net -net axi_registers_0_led [get_bd_ports led] [get_bd_pins axi_registers/led]
-  connect_bd_net -net daq_0_data_adc_out [get_bd_pins axi_registers/data_adc_in] [get_bd_pins daq_0/data_adc_out]
-  connect_bd_net -net daq_0_data_status_reg [get_bd_pins axi_registers/data_status_reg] [get_bd_pins daq_0/data_status_reg]
+  connect_bd_net -net axi_registers_daq_control_reg [get_bd_pins axi_registers/daq_control_reg] [get_bd_pins daq_0/daq_control_reg]
+  connect_bd_net -net daq_0_daq_adc_out [get_bd_pins axi_registers/daq_adc_in] [get_bd_pins daq_0/daq_adc_out]
+  connect_bd_net -net daq_0_daq_status_reg [get_bd_pins axi_registers/daq_status_reg] [get_bd_pins daq_0/daq_status_reg]
+  connect_bd_net -net daq_0_fifo_data_reg [get_bd_pins axi_registers/daq_fifo_data_reg] [get_bd_pins daq_0/fifo_data_reg]
   connect_bd_net -net daq_0_ready_out [get_bd_pins axi_registers/daq_read] [get_bd_pins daq_0/ready_out]
-  connect_bd_net -net daq_0_s_axis_aclk [get_bd_pins daq_0/s_axis_aclk] [get_bd_pins xadc_wiz_0/s_axis_aclk]
   connect_bd_net -net daq_0_s_axis_tready [get_bd_pins daq_0/s_axis_tready] [get_bd_pins xadc_wiz_0/m_axis_tready]
   connect_bd_net -net daq_0_valid_out [get_bd_pins axi_registers/adc_valid] [get_bd_pins daq_0/valid_out]
-  connect_bd_net -net processing_system7_0_FCLK_CLK0 [get_bd_pins axi_registers/s0_axi_aclk] [get_bd_pins axi_smc/aclk] [get_bd_pins daq_0/clk_in] [get_bd_pins processing_system7_0/FCLK_CLK0] [get_bd_pins processing_system7_0/M_AXI_GP0_ACLK] [get_bd_pins rst_ps7_0_100M/slowest_sync_clk] [get_bd_pins xadc_wiz_0/s_axi_aclk]
+  connect_bd_net -net processing_system7_0_FCLK_CLK0 [get_bd_pins axi_registers/s0_axi_aclk] [get_bd_pins axi_smc/aclk] [get_bd_pins daq_0/clk_in] [get_bd_pins processing_system7_0/FCLK_CLK0] [get_bd_pins processing_system7_0/M_AXI_GP0_ACLK] [get_bd_pins rst_ps7_0_100M/slowest_sync_clk] [get_bd_pins xadc_wiz_0/m_axis_aclk] [get_bd_pins xadc_wiz_0/s_axis_aclk]
   connect_bd_net -net processing_system7_0_FCLK_RESET0_N [get_bd_pins processing_system7_0/FCLK_RESET0_N] [get_bd_pins rst_ps7_0_100M/ext_reset_in]
-  connect_bd_net -net rst_ps7_0_100M_peripheral_aresetn [get_bd_pins axi_registers/s0_axi_aresetn] [get_bd_pins axi_smc/aresetn] [get_bd_pins daq_0/rst_in] [get_bd_pins rst_ps7_0_100M/peripheral_aresetn] [get_bd_pins xadc_wiz_0/s_axi_aresetn]
+  connect_bd_net -net rst_ps7_0_100M_peripheral_aresetn [get_bd_pins axi_registers/s0_axi_aresetn] [get_bd_pins axi_smc/aresetn] [get_bd_pins daq_0/rst_in] [get_bd_pins rst_ps7_0_100M/peripheral_aresetn] [get_bd_pins xadc_wiz_0/m_axis_resetn]
   connect_bd_net -net xadc_wiz_0_busy_out [get_bd_pins axi_registers/busy_in] [get_bd_pins xadc_wiz_0/busy_out]
   connect_bd_net -net xadc_wiz_0_m_axis_tdata [get_bd_pins daq_0/s_axis_tdata] [get_bd_pins xadc_wiz_0/m_axis_tdata]
   connect_bd_net -net xadc_wiz_0_m_axis_tid [get_bd_pins daq_0/s_axis_tid] [get_bd_pins xadc_wiz_0/m_axis_tid]
@@ -1152,14 +1157,10 @@ Flash#Quad SPI Flash#GPIO#Quad SPI Flash#ENET Reset#GPIO#GPIO#GPIO#GPIO#UART\
   # Create address segments
   assign_bd_address -offset 0x40000000 -range 0x40000000 -target_address_space [get_bd_addr_spaces processing_system7_0/Data] [get_bd_addr_segs axi_registers/s0_axi/reg0] -force
 
-  # Exclude Address Segments
-  exclude_bd_addr_seg -target_address_space [get_bd_addr_spaces processing_system7_0/Data] [get_bd_addr_segs xadc_wiz_0/s_axi_lite/Reg]
-
 
   # Restore current instance
   current_bd_instance $oldCurInst
 
-  validate_bd_design
   save_bd_design
 }
 # End of create_root_design()
@@ -1171,4 +1172,6 @@ Flash#Quad SPI Flash#GPIO#Quad SPI Flash#ENET Reset#GPIO#GPIO#GPIO#GPIO#UART\
 
 create_root_design ""
 
+
+common::send_gid_msg -ssname BD::TCL -id 2053 -severity "WARNING" "This Tcl script was generated from a block design that has not been validated. It is possible that design <$design_name> may result in errors during validation."
 

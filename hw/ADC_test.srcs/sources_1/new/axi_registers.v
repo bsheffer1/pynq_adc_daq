@@ -58,9 +58,16 @@ module axi_registers
     input s0_axi_wvalid,
     
     //input from DAQ module
-    input [31:0] data_status_reg,
-    input [31:0] data_adc_in,
+    input [31:0] daq_status_reg,
+    input [31:0] daq_adc_in,
     
+    //control data to the DAQ module
+    output reg [31:0] daq_control_reg,
+    
+    //fifo output data from the DAQ module
+    input [31:0] daq_fifo_data_reg,
+    
+    //signals to confirm operation of ADC module
     input adc_valid,
     input daq_read,
     input busy_in,
@@ -93,6 +100,8 @@ module axi_registers
     parameter adc_test_data_addr     = 8'd1;
     parameter adc_valid_counter_addr = 8'd2;
     parameter adc_busy_counter_addr = 8'd3;
+    parameter daq_status_reg_addr = 8'd4;
+    parameter daq_fifo_data_reg_addr = 8'd5;
     
     //define PL writeable registers
     reg [data_width-1:0] heartbeat_counter = 32'd0;
@@ -101,9 +110,7 @@ module axi_registers
     reg [data_width-1:0] adc_busy_counter     = 32'd0;
     
     //define PS writeable register addresses (128-255)
-    parameter control_register_0_addr = 8'd128;
-    
-    reg [data_width-1:0] control_register_0 = 31'd0;
+    parameter daq_control_reg_addr = 8'd128;
     
     reg adc_busy_old = 1'b0;
     
@@ -129,7 +136,7 @@ module axi_registers
             
             heartbeat_counter   <= 32'd0;
             adc_test_data <= 32'd0;
-            control_register_0  <= 32'd0;
+            daq_control_reg  <= 32'd0;
             adc_valid_counter <= 32'd0;
             adc_busy_counter <= 32'd0;
             
@@ -140,10 +147,10 @@ module axi_registers
             /*********************************************/
             /*assign debug LEDs                          */
             /*********************************************/
-            led[0] <= daq_read;
-            led[1] <= adc_valid;
-            led[2] <= s0_axi_aresetn;
-            led[3] <= ~busy_in;
+            led[0] <= daq_status_reg[16];
+            led[1] <= daq_status_reg[17];
+            led[2] <= daq_status_reg[18];
+            led[3] <= daq_status_reg[19];
             
             /*********************************************/
             /*axi read state amchine logic               */
@@ -181,7 +188,11 @@ module axi_registers
                             
                             adc_busy_counter_addr: s0_axi_rdata <= adc_busy_counter;
                             
-                            control_register_0_addr: s0_axi_rdata <= control_register_0;
+                            daq_control_reg_addr: s0_axi_rdata <= daq_control_reg;
+                            
+                            daq_status_reg_addr: s0_axi_rdata <= daq_status_reg;
+                            
+                            daq_fifo_data_reg_addr: s0_axi_rdata <= daq_fifo_data_reg;
                             
                             //TODO: add any additional registers added in the future (all registers should be readable by PS)
                            
@@ -269,7 +280,7 @@ module axi_registers
                     end
                     //write_state <= write_idle_state;
                     case (write_addr)
-                        control_register_0_addr: control_register_0 <= write_data;
+                        daq_control_reg_addr: daq_control_reg <= write_data;
                         
                         //TODO: add additional PS writeable registers as necessary
                     endcase
@@ -282,7 +293,7 @@ module axi_registers
             /*PL writeable register assignment logic (when combinational won't work)   */
             /***************************************************************************/
             heartbeat_counter <= heartbeat_counter + 32'd1;
-            adc_test_data <= data_adc_in;
+            adc_test_data <= daq_adc_in;
             
             adc_busy_old <= busy_in;
             

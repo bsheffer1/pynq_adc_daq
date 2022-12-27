@@ -7,7 +7,8 @@
       "name": "adc_interface",
       "rev_ctrl_bd_flag": "RevCtrlBdOff",
       "synth_flow_mode": "Hierarchical",
-      "tool_version": "2021.1"
+      "tool_version": "2021.1",
+      "validated": "true"
     },
     "design_tree": {
       "axi_smc": "",
@@ -216,18 +217,64 @@
       },
       "DDR_ck_n": {
         "type": "clk",
-        "direction": "IO"
+        "direction": "IO",
+        "parameters": {
+          "FREQ_HZ": {
+            "value": "100000000",
+            "value_src": "default"
+          },
+          "FREQ_TOLERANCE_HZ": {
+            "value": "0",
+            "value_src": "default"
+          },
+          "INSERT_VIP": {
+            "value": "0",
+            "value_src": "default"
+          },
+          "PHASE": {
+            "value": "0.0",
+            "value_src": "default"
+          }
+        }
       },
       "DDR_ck_p": {
         "type": "clk",
-        "direction": "IO"
+        "direction": "IO",
+        "parameters": {
+          "FREQ_HZ": {
+            "value": "100000000",
+            "value_src": "default"
+          },
+          "FREQ_TOLERANCE_HZ": {
+            "value": "0",
+            "value_src": "default"
+          },
+          "INSERT_VIP": {
+            "value": "0",
+            "value_src": "default"
+          },
+          "PHASE": {
+            "value": "0.0",
+            "value_src": "default"
+          }
+        }
       },
       "DDR_cs_n": {
         "direction": "IO"
       },
       "DDR_reset_n": {
         "type": "rst",
-        "direction": "IO"
+        "direction": "IO",
+        "parameters": {
+          "INSERT_VIP": {
+            "value": "0",
+            "value_src": "default"
+          },
+          "POLARITY": {
+            "value": "ACTIVE_LOW",
+            "value_src": "default"
+          }
+        }
       },
       "DDR_odt": {
         "direction": "IO"
@@ -2531,12 +2578,22 @@
               }
             }
           },
-          "data_status_reg": {
+          "daq_status_reg": {
             "direction": "I",
             "left": "31",
             "right": "0"
           },
-          "data_adc_in": {
+          "daq_adc_in": {
+            "direction": "I",
+            "left": "31",
+            "right": "0"
+          },
+          "daq_control_reg": {
+            "direction": "O",
+            "left": "31",
+            "right": "0"
+          },
+          "daq_fifo_data_reg": {
             "direction": "I",
             "left": "31",
             "right": "0"
@@ -2632,18 +2689,43 @@
         },
         "ports": {
           "clk_in": {
-            "direction": "I"
+            "direction": "I",
+            "parameters": {
+              "FREQ_HZ": {
+                "value": "100000000",
+                "value_src": "user_prop"
+              },
+              "PHASE": {
+                "value": "0.0",
+                "value_src": "default_prop"
+              },
+              "CLK_DOMAIN": {
+                "value": "adc_interface_processing_system7_0_0_FCLK_CLK0",
+                "value_src": "default_prop"
+              }
+            }
           },
           "rst_in": {
-            "direction": "I"
+            "direction": "I",
+            "parameters": {
+              "POLARITY": {
+                "value": "ACTIVE_LOW",
+                "value_src": "const_prop"
+              }
+            }
           },
-          "data_status_reg": {
+          "daq_status_reg": {
             "direction": "O",
             "left": "31",
             "right": "0"
           },
-          "data_adc_out": {
+          "daq_adc_out": {
             "direction": "O",
+            "left": "31",
+            "right": "0"
+          },
+          "daq_control_reg": {
+            "direction": "I",
             "left": "31",
             "right": "0"
           },
@@ -2652,6 +2734,11 @@
           },
           "valid_out": {
             "direction": "O"
+          },
+          "fifo_data_reg": {
+            "direction": "O",
+            "left": "31",
+            "right": "0"
           }
         }
       }
@@ -2701,16 +2788,28 @@
           "led"
         ]
       },
-      "daq_0_data_adc_out": {
+      "axi_registers_daq_control_reg": {
         "ports": [
-          "daq_0/data_adc_out",
-          "axi_registers/data_adc_in"
+          "axi_registers/daq_control_reg",
+          "daq_0/daq_control_reg"
         ]
       },
-      "daq_0_data_status_reg": {
+      "daq_0_daq_adc_out": {
         "ports": [
-          "daq_0/data_status_reg",
-          "axi_registers/data_status_reg"
+          "daq_0/daq_adc_out",
+          "axi_registers/daq_adc_in"
+        ]
+      },
+      "daq_0_daq_status_reg": {
+        "ports": [
+          "daq_0/daq_status_reg",
+          "axi_registers/daq_status_reg"
+        ]
+      },
+      "daq_0_fifo_data_reg": {
+        "ports": [
+          "daq_0/fifo_data_reg",
+          "axi_registers/daq_fifo_data_reg"
         ]
       },
       "daq_0_ready_out": {
@@ -2737,9 +2836,9 @@
           "processing_system7_0/M_AXI_GP0_ACLK",
           "axi_smc/aclk",
           "rst_ps7_0_100M/slowest_sync_clk",
-          "axi_registers/s0_axi_aclk",
           "xadc_wiz_0/m_axis_aclk",
           "xadc_wiz_0/s_axis_aclk",
+          "axi_registers/s0_axi_aclk",
           "daq_0/clk_in"
         ]
       },
@@ -2753,14 +2852,14 @@
         "ports": [
           "rst_ps7_0_100M/peripheral_aresetn",
           "axi_smc/aresetn",
-          "axi_registers/s0_axi_aresetn",
           "xadc_wiz_0/m_axis_resetn",
+          "axi_registers/s0_axi_aresetn",
           "daq_0/rst_in"
         ]
       },
-      "xadc_wiz_0_eoc_out": {
+      "xadc_wiz_0_busy_out": {
         "ports": [
-          "xadc_wiz_0/eoc_out",
+          "xadc_wiz_0/busy_out",
           "axi_registers/busy_in"
         ]
       },
